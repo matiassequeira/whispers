@@ -22,10 +22,17 @@ exclude:
     - "**/package.json"
     - "**/npm-shrinkwrap.json"
     - "**/node_modules/**/*"
+    - "**/usr/lib/**/*"
+    - "**/usr/local/**/*"
+    - "**/var/lib/**/*"
+    - "**/usr/share/**/*"
+    - "*.so"
+    - "**/lib*/python2.*/**/*"
+    - "**/lib*/python3.*/**/*"
   keys:
     - .*(public|project).*
-  values:
-    - ^(true|false|yes|no|1|0)$
-    - .*_(user|password|token|key|placeholder|name)$
-    - ^aws_(access_key_id|secret_access_key|session_token)$
-    - ^arn:aws:.*
+  # values:
+  #   - ^(true|false|yes|no|1|0)$
+  #   - .*_(user|password|token|key|placeholder|name)$
+  #   - ^aws_(access_key_id|secret_access_key|session_token)$
+  #   - ^arn:aws:.*

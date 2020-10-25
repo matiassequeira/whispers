@@ -1,5 +1,7 @@
 import json
 import re
+import string
+
 from collections import namedtuple
 from difflib import SequenceMatcher
 from hashlib import md5
@@ -157,3 +159,20 @@ def format_stdout(secret: Secret, output: Optional[Path] = None) -> str:
     data = json.dumps(secret._asdict())
     print(data)
     return data
+
+
+def strings(filename, min=4):
+    """
+    Similar to `strings` unix command. Yields a list.
+    """
+    with open(filename, errors="ignore") as f:  # Python 3.x
+        result = ""
+        for c in f.read():
+            if c in string.printable:
+                result += c
+                continue
+            if len(result) >= min:
+                yield result
+            result = ""
+        if len(result) >= min:  # catch result at EOF
+            yield result

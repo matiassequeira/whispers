@@ -1,9 +1,14 @@
 import re
+import os
+
 from pathlib import Path
 
 from whispers.log import debug
 from whispers.secrets import WhisperSecrets
 from whispers.utils import load_yaml_from_file
+from shutil import copy2
+from random import seed
+from random import randint
 
 
 def load_config(configfile, src="."):
@@ -51,7 +56,8 @@ def load_config(configfile, src="."):
     return config
 
 
-def run(src: str, config=None):
+def run(src: str, config=None, dst=None):
+    source= src
     src = Path(src)
     if not src.exists():
         debug(f"{src} does not exist")
@@ -78,9 +84,31 @@ def run(src: str, config=None):
     # Exclude files
     files = list(set(files) - set(config["exclude"]["files"]))
 
+    if dst and not os.path.isdir(dst):
+        os.mkdir(dst)
+
     # Scan files
     whispers = WhisperSecrets(config)
     for filename in files:
-        for secret in whispers.scan(filename):
-            if secret:
-                yield secret
+        # print(filename)
+        try:
+            for secret in whispers.scan(filename):
+                if secret:
+                    if dst: save_file(filename, dst)
+                    yield secret
+        except Exception as e:
+            print(f"Error: {e}")
+
+def save_file(filepath, dst):
+    seed(1)
+    original_filepath= filepath
+    filename= os.path.basename(filepath)
+    try:
+        new_filepath= os.path.join(dst, filename)
+        # Avoid collision of files with same name by adding three random numbers at the end
+        while os.path.exists(new_filepath):
+            filename=str(filename)+'_'+str(randint(100, 999))
+            new_filepath= os.path.join(dst, filename)
+        copy2(original_filepath, new_filepath)
+    except Exception as e:  
+        print(f"Error saving file: {e}") 

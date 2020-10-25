@@ -1,5 +1,6 @@
 from pathlib import Path
 from typing import Optional
+from mimetypes import guess_type
 
 from whispers.plugins.config import Config
 from whispers.plugins.dockerfile import Dockerfile
@@ -18,6 +19,7 @@ from whispers.plugins.python import Python
 from whispers.plugins.shell import Shell
 from whispers.plugins.xml import Xml
 from whispers.plugins.yml import Yml
+from whispers.plugins.binary import Bin
 
 
 class WhisperPlugins:
@@ -30,6 +32,15 @@ class WhisperPlugins:
 
     def load_plugin(self) -> Optional[object]:
         """Loads the correct plugin for a given file"""
+        
+        # First, check if the file is binary
+        try:
+            for line in self.filepath.open("r"):
+                continue
+        except Exception as e:
+            if guess_type(self.filepath)==(None, None):
+                return Bin()
+
         if not self.filepath.exists():
             return None
         elif not self.filepath.is_file():
@@ -59,6 +70,7 @@ class WhisperPlugins:
         elif self.filetype == "properties":
             return Jproperties()
         elif self.filetype.startswith(("sh", "bash", "zsh", "env")):
+            # This is less restrictive, since considers a fs/usr/bin/sha384sum filetype as sha384sum
             return Shell()
         elif self.filepath.name.startswith("Dockerfile"):
             return Dockerfile()

@@ -1,0 +1,13 @@
+azure:
+  description: Values formatted like AWS Session Token
+  message: Azure Data  # report will show this message
+  severity: BLOCKER           # one of BLOCKER, CRITICAL, MAJOR, MINOR, INFO
+
+  key:        # specify key format
+    regex: ^.*azure.*$
+    ignorecase: True   # case-insensitive matching
+
+  value:      # specify value format
+    isUri: False       # value is not formatted like a URI
+
+  similar: 0.35        # maximum similarity between key and value

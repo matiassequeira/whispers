@@ -2,6 +2,7 @@ import shlex
 from pathlib import Path
 
 from whispers.utils import escaped_chars, strip_string
+from whispers.log import debug
 
 
 class Shell:
@@ -16,7 +17,13 @@ class Shell:
                 full_command.append(line[:-1])
                 continue
             full_command.append(line)
-            cmd = shlex.split(" ".join(full_command))
+            
+            try:
+                cmd = shlex.split(" ".join(full_command))
+            except Exception as e:
+                debug(f"Problem splitting {full_command}: {e}")
+                continue
+
             full_command = []
             if not cmd:
                 continue
@@ -39,8 +46,8 @@ class Shell:
                 continue  # End of command
             credentials = strip_string(cmd[idx + 1])
             if indicator in indicators_single:
-                yield "cURL_Password", credentials
+                yield "cURL Password", credentials
             else:
                 if ":" not in credentials:
                     continue  # Password not specified
-                yield "cURL_Password", credentials.split(":")[1]
+                yield "cURL Password", credentials.split(":")[1]

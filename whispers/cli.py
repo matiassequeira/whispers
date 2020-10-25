@@ -14,6 +14,7 @@ def cli():
     args_parser.add_argument("-c", "--config", default=None, help="config file")
     args_parser.add_argument("-o", "--output", help="output file (.yml)")
     args_parser.add_argument("src", nargs="?", help="source code file or directory")
+    args_parser.add_argument("-d", "--dst", help="directory to store files that matched with secrets")
     args = args_parser.parse_args()
 
     # Default response
@@ -31,7 +32,7 @@ def cli():
         args.config = load_config(args.config, src=args.src)
 
     # Valar margulis
-    for secret in run(args.src, config=args.config):
+    for secret in run(args.src, config=args.config, dst=args.dst):
         format_stdout(secret, args.output)
 
 
